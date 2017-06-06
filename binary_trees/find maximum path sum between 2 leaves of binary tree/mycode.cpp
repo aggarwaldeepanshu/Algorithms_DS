@@ -1,4 +1,5 @@
 #include<iostream>
+#include<climits>
 using namespace std;
 
 struct node
@@ -11,40 +12,37 @@ class tree
 {
 	public:
 
-		struct node *RemoveNode(struct node *,int,int *);
-		void inorder(struct node *);
+		int MaxPath(struct node *,int *);
 };
 
-struct node *tree::RemoveNode(struct node *root,int k,int *sum)
+int max(int a,int b)
 {
-	int l=0,r=0;
-	if(root==NULL)
-	{
-		*sum=0;
-		return NULL;
-	}
-	*sum=*sum+root->data;
-	l=*sum;
-	r=*sum;
-	root->lchild=RemoveNode(root->lchild,k,&l);
-	root->rchild=RemoveNode(root->rchild,k,&r);
-
-	if(*sum<k&&!root->lchild&&!root->rchild)
-	{
-		delete root;
-		root=NULL;
-	}
-	return root;
+	return (a>b)?a:b;
 }
 
-void tree::inorder(struct node *root)
+int tree::MaxPath(struct node *root,int *k)
 {
+	int lchild=0,rchild=0;
 	if(root==NULL)
-		return ;
+		return 0;
 
-	inorder(root->lchild);
-	cout<<root->data<<" ";
-	inorder(root->rchild);
+	if(root->lchild==NULL && root->rchild==NULL)
+		return root->data;
+
+	lchild=MaxPath(root->lchild,k);
+	rchild=MaxPath(root->rchild,k);
+
+	if(root->lchild && root->rchild)
+	{
+		*k=max(*k,lchild+rchild+root->data);
+		return max(lchild,rchild)+root->data;
+	}
+
+	if(root->lchild)
+		return lchild+root->data;
+
+	else if(root->rchild)
+		return rchild+root->data;
 }
 
 struct node *new_node(int val)
@@ -70,7 +68,7 @@ struct node *insert(struct node *root,int val)
 
 int main(void)
 {
-	int i,val,k,sum=0;
+	int i,val,k=INT_MIN;
 	struct node *root;
 	root=NULL;
 	tree ob;
@@ -81,8 +79,6 @@ int main(void)
 		root=insert(root,val);
 		cin>>val;
 	}
-	cout<<"Enter K"<<endl;
-	cin>>k;
-	root=ob.RemoveNode(root,k,&sum);
-	ob.inorder(root);
+	ob.MaxPath(root,&k);
+	cout<<"maximum sum is "<<k<<endl;
 }

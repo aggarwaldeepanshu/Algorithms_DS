@@ -11,40 +11,26 @@ class tree
 {
 	public:
 
-		struct node *RemoveNode(struct node *,int,int *);
-		void inorder(struct node *);
+		struct node *LCA(struct node *,int,int);
 };
 
-struct node *tree::RemoveNode(struct node *root,int k,int *sum)
+struct node *tree::LCA(struct node *root,int n1,int n2)
 {
-	int l=0,r=0;
+	struct node *left=NULL,*right=NULL;
 	if(root==NULL)
-	{
-		*sum=0;
 		return NULL;
-	}
-	*sum=*sum+root->data;
-	l=*sum;
-	r=*sum;
-	root->lchild=RemoveNode(root->lchild,k,&l);
-	root->rchild=RemoveNode(root->rchild,k,&r);
 
-	if(*sum<k&&!root->lchild&&!root->rchild)
-	{
-		delete root;
-		root=NULL;
-	}
-	return root;
-}
+	if(root->data==n1||root->data==n2)
+		return root;
 
-void tree::inorder(struct node *root)
-{
-	if(root==NULL)
-		return ;
-
-	inorder(root->lchild);
-	cout<<root->data<<" ";
-	inorder(root->rchild);
+	left=LCA(root->lchild,n1,n2);
+	right=LCA(root->rchild,n1,n2);
+	if(left && right)
+		return root;
+	else if(left)
+		return left;
+	else 
+		return right;
 }
 
 struct node *new_node(int val)
@@ -70,8 +56,8 @@ struct node *insert(struct node *root,int val)
 
 int main(void)
 {
-	int i,val,k,sum=0;
-	struct node *root;
+	int i,val,n1,n2;
+	struct node *root,*ptr;
 	root=NULL;
 	tree ob;
 	cout<<"Enter the values for tree"<<endl<<"Enter -1 to exit"<<endl;
@@ -81,8 +67,8 @@ int main(void)
 		root=insert(root,val);
 		cin>>val;
 	}
-	cout<<"Enter K"<<endl;
-	cin>>k;
-	root=ob.RemoveNode(root,k,&sum);
-	ob.inorder(root);
+	cout<<"Enter the two values"<<endl;
+	cin>>n1>>n2;
+	ptr=ob.LCA(root,n1,n2);
+	cout<<ptr->data<<endl;
 }

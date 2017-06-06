@@ -1,4 +1,5 @@
 #include<iostream>
+#define max 1000
 using namespace std;
 
 struct node
@@ -11,40 +12,37 @@ class tree
 {
 	public:
 
-		struct node *RemoveNode(struct node *,int,int *);
-		void inorder(struct node *);
+		void PrintNode(struct node *,int);
+		void PrintNodeRecur(struct node *,int,int [],bool [],int);
 };
 
-struct node *tree::RemoveNode(struct node *root,int k,int *sum)
+void tree::PrintNode(struct node *root,int k)
 {
-	int l=0,r=0;
-	if(root==NULL)
-	{
-		*sum=0;
-		return NULL;
-	}
-	*sum=*sum+root->data;
-	l=*sum;
-	r=*sum;
-	root->lchild=RemoveNode(root->lchild,k,&l);
-	root->rchild=RemoveNode(root->rchild,k,&r);
+	int arr[max],size=0;
+	bool visited[max];
+	PrintNodeRecur(root,k,arr,visited,size);
 
-	if(*sum<k&&!root->lchild&&!root->rchild)
-	{
-		delete root;
-		root=NULL;
-	}
-	return root;
 }
 
-void tree::inorder(struct node *root)
+void tree::PrintNodeRecur(struct node *root,int k,int arr[],bool visited[],int size)
 {
+
 	if(root==NULL)
 		return ;
 
-	inorder(root->lchild);
-	cout<<root->data<<" ";
-	inorder(root->rchild);
+	arr[size]=root->data;
+	visited[size]=false;
+	size++;
+	if(!root->lchild && !root->rchild)
+	{
+		if(size-k-1>=0&&visited[size-k-1]==false)
+		{
+			cout<<arr[size-k-1]<<" ";
+			visited[size-k-1]=true;
+		}
+	}
+	PrintNodeRecur(root->lchild,k,arr,visited,size);
+	PrintNodeRecur(root->rchild,k,arr,visited,size);
 }
 
 struct node *new_node(int val)
@@ -70,7 +68,7 @@ struct node *insert(struct node *root,int val)
 
 int main(void)
 {
-	int i,val,k,sum=0;
+	int i,val,k;
 	struct node *root;
 	root=NULL;
 	tree ob;
@@ -81,8 +79,7 @@ int main(void)
 		root=insert(root,val);
 		cin>>val;
 	}
-	cout<<"Enter K"<<endl;
+	cout<<"Enter k"<<endl;
 	cin>>k;
-	root=ob.RemoveNode(root,k,&sum);
-	ob.inorder(root);
+	ob.PrintNode(root,k);
 }
